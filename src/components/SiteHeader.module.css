@@ -1,0 +1,45 @@
+.header {
+  border-bottom: var(--line-width) solid var(--line);
+  background: var(--ground);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: var(--space-4);
+}
+
+.logoLink {
+  display: inline-block;
+  border-radius: var(--radius-sm);
+}
+
+/* Clear space comes from the header padding; never below 24px tall. */
+.logo {
+  height: var(--space-8);
+  width: auto;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.navLink {
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+}
+
+.navLink:hover {
+  color: var(--curtain);
+}
+
+@media (max-width: 640px) {
+  .navLinkItem {
+    display: none;
+  }
+}

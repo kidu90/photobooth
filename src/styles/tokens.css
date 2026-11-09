@@ -1,0 +1,134 @@
+/* Pose — generated from design-system/tokens.json by scripts/tokens-to-css.mjs. Do not edit. */
+
+:root {
+  color-scheme: light;
+  --ground: #fbf5e9;
+  --surface: #ffffff;
+  --ink: #1c1714;
+  --muted: #6b6058;
+  --line: #e4d9c8;
+  --control-line: #8c7f73;
+  --curtain: #c8321f;
+  --on-curtain: #ffffff;
+  --flash: #ffd23f;
+  --on-flash: #1c1714;
+  --blush: #f8ddd2;
+
+  --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-body: "Instrument Sans", system-ui, sans-serif;
+
+  --type-hero-family: var(--font-display);
+  --type-hero-size: 88px;
+  --type-hero-line: 0.95;
+  --type-hero-weight: 700;
+  --type-hero-tracking: -0.02em;
+  --type-h1-family: var(--font-display);
+  --type-h1-size: 56px;
+  --type-h1-line: 1;
+  --type-h1-weight: 700;
+  --type-h1-tracking: -0.015em;
+  --type-h2-family: var(--font-display);
+  --type-h2-size: 36px;
+  --type-h2-line: 1.1;
+  --type-h2-weight: 700;
+  --type-h2-tracking: normal;
+  --type-h3-family: var(--font-display);
+  --type-h3-size: 24px;
+  --type-h3-line: 1.2;
+  --type-h3-weight: 600;
+  --type-h3-tracking: normal;
+  --type-lead-family: var(--font-body);
+  --type-lead-size: 20px;
+  --type-lead-line: 1.45;
+  --type-lead-weight: 400;
+  --type-lead-tracking: normal;
+  --type-body-family: var(--font-body);
+  --type-body-size: 16px;
+  --type-body-line: 1.55;
+  --type-body-weight: 400;
+  --type-body-tracking: normal;
+  --type-label-family: var(--font-body);
+  --type-label-size: 14px;
+  --type-label-line: 1.3;
+  --type-label-weight: 600;
+  --type-label-tracking: normal;
+
+  --space-2: 8px;
+  --space-4: 16px;
+  --space-8: 32px;
+  --space-16: 64px;
+  --radius-sm: 6px;
+  --radius-md: 16px;
+  --radius-pill: 999px;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground: #17120f;
+  --surface: #241d19;
+  --ink: #f7f0e3;
+  --muted: #b8ab9d;
+  --line: #3b312a;
+  --control-line: #857869;
+  --curtain: #ff7256;
+  --on-curtain: #17120f;
+  --flash: #ffd23f;
+  --on-flash: #1c1714;
+  --blush: #4a2219;
+}
+
+.t-hero {
+  font-family: var(--type-hero-family);
+  font-size: var(--type-hero-size);
+  line-height: var(--type-hero-line);
+  font-weight: var(--type-hero-weight);
+  letter-spacing: var(--type-hero-tracking);
+}
+
+.t-h1 {
+  font-family: var(--type-h1-family);
+  font-size: var(--type-h1-size);
+  line-height: var(--type-h1-line);
+  font-weight: var(--type-h1-weight);
+  letter-spacing: var(--type-h1-tracking);
+}
+
+.t-h2 {
+  font-family: var(--type-h2-family);
+  font-size: var(--type-h2-size);
+  line-height: var(--type-h2-line);
+  font-weight: var(--type-h2-weight);
+  letter-spacing: var(--type-h2-tracking);
+}
+
+.t-h3 {
+  font-family: var(--type-h3-family);
+  font-size: var(--type-h3-size);
+  line-height: var(--type-h3-line);
+  font-weight: var(--type-h3-weight);
+  letter-spacing: var(--type-h3-tracking);
+}
+
+.t-lead {
+  font-family: var(--type-lead-family);
+  font-size: var(--type-lead-size);
+  line-height: var(--type-lead-line);
+  font-weight: var(--type-lead-weight);
+  letter-spacing: var(--type-lead-tracking);
+}
+
+.t-body {
+  font-family: var(--type-body-family);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line);
+  font-weight: var(--type-body-weight);
+  letter-spacing: var(--type-body-tracking);
+}
+
+.t-label {
+  font-family: var(--type-label-family);
+  font-size: var(--type-label-size);
+  line-height: var(--type-label-line);
+  font-weight: var(--type-label-weight);
+  letter-spacing: var(--type-label-tracking);
+}

@@ -1,0 +1,42 @@
+.strip {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border: var(--line-width) solid var(--line);
+  border-radius: var(--radius-sm);
+  width: 100%;
+}
+
+.lg {
+  padding: var(--space-4);
+}
+
+.photo {
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  border: var(--line-width) dashed var(--control-line);
+  background: var(--surface);
+  color: var(--muted);
+  text-align: center;
+}
+
+.photoLabel {
+  max-width: 100%;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  padding-block: var(--space-2);
+}
+
+/* space-8 (32px) keeps the mark above its 24px minimum. */
+.logo {
+  height: var(--space-8);
+  width: auto;
+}

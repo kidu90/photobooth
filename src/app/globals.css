@@ -1,19 +1,191 @@
-@import "tailwindcss";
+@import "../styles/tokens.css";
 
-@theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --animate-pop: pop 1s ease-out;
+/*
+ * Every colour, type style, spacing step and radius below comes from tokens.css.
+ * The only other values are layout constants (page width, breakpoints, aspect ratios)
+ * and motion timings, which the design system doesn't define.
+ */
+
+:root {
+  --page-max: 1120px;
+  --line-width: 1px;
+  --focus-width: 2px;
 }
 
-@keyframes pop {
-  0% { transform: scale(1.6); opacity: 0; }
-  20% { transform: scale(1); opacity: 1; }
-  80% { opacity: 1; }
-  100% { transform: scale(0.9); opacity: 0; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  background: #fdf8f4;
-  color: #171717;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--type-body-family);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line);
+  font-weight: var(--type-body-weight);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p,
+ol,
+ul,
+figure {
+  margin: 0;
+}
+
+ol,
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: var(--curtain);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+/* Focus: 2px solid ink, offset 2px, everywhere. */
+:focus-visible {
+  outline: var(--focus-width) solid var(--ink);
+  outline-offset: var(--focus-width);
+}
+
+/* Hero steps down to h1 size on phones. */
+@media (max-width: 640px) {
+  .t-hero {
+    font-size: var(--type-h1-size);
+    line-height: var(--type-h1-line);
+    letter-spacing: var(--type-h1-tracking);
+  }
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.container {
+  width: 100%;
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding-inline: var(--space-8);
+  }
+}
+
+.section {
+  padding-block: var(--space-16);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--space-4);
+  top: var(--space-4);
+  z-index: 100;
+  padding: var(--space-2) var(--space-4);
+  background: var(--surface);
+  color: var(--ink);
+  border-radius: var(--radius-pill);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  transform: none;
+}
+
+/* Buttons: pill-shaped, label type. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-8);
+  min-height: calc(var(--space-8) + var(--space-4));
+  border: var(--line-width) solid transparent;
+  border-radius: var(--radius-pill);
+  font-family: var(--type-label-family);
+  font-size: var(--type-label-size);
+  line-height: var(--type-label-line);
+  font-weight: var(--type-label-weight);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.btn-primary {
+  background: var(--curtain);
+  color: var(--on-curtain);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--control-line);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--surface);
+}
+
+/* For buttons that sit on a curtain section. */
+.btn-inverse {
+  background: var(--on-curtain);
+  color: var(--curtain);
+}
+
+.btn-lg {
+  min-height: var(--space-16);
+  padding-inline: var(--space-8);
+  font-size: var(--type-body-size);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

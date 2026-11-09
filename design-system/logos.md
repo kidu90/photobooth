@@ -1,0 +1,1 @@
+Pose logos, as SVG. `pose-logo.svg` has `#1c1714` lettering for light grounds, and `pose-logo-reversed.svg` has `#fbf5e9` lettering for dark grounds. `pose-mark.svg` is the two-colour mark, `pose-mark-ink.svg` is single-ink `#1c1714`, `pose-mark-paper.svg` is single-ink `#fbf5e9`, and `pose-app-icon.svg` is the favicon and app-store tile.

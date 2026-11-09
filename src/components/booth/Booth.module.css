@@ -1,0 +1,302 @@
+.flow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+/* Step indicator */
+.progress {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.progressItem {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  border: var(--line-width) solid var(--line);
+  color: var(--muted);
+}
+
+.progressCurrent {
+  background: var(--blush);
+  border-color: var(--blush);
+  color: var(--ink);
+}
+
+.stepIntro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Headings take focus on step change so screen readers announce them, but they
+   aren't interactive, so they don't show a focus ring. */
+.stepIntro h1:focus,
+.stepIntro h1:focus-visible {
+  outline: none;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+/* ---------- Shoot ---------- */
+
+.cameraLayout {
+  display: grid;
+  gap: var(--space-8);
+  grid-template-areas:
+    "intro"
+    "stage"
+    "side";
+}
+
+.cameraLayout > .stepIntro {
+  grid-area: intro;
+}
+
+.cameraLayout > .stage {
+  grid-area: stage;
+}
+
+.cameraLayout > .side {
+  grid-area: side;
+}
+
+@media (min-width: 960px) {
+  .cameraLayout {
+    grid-template-columns: 2fr 1fr;
+    grid-template-areas:
+      "stage intro"
+      "stage side";
+    grid-template-rows: auto 1fr;
+  }
+}
+
+.stage {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--ink);
+}
+
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Mirror the preview so it feels like a mirror. Captures are mirrored to match. */
+  transform: scaleX(-1);
+}
+
+.video[hidden] {
+  display: none;
+}
+
+.stageMessage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--surface);
+  color: var(--ink);
+  overflow-y: auto;
+}
+
+@media (min-width: 768px) {
+  .stageMessage {
+    padding: var(--space-8);
+  }
+}
+
+.countdown {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* The countdown sits in a flash-coloured disc, like the logo's lens. */
+.countdownDisc {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--space-16) * 2);
+  height: calc(var(--space-16) * 2);
+  border-radius: var(--radius-pill);
+  background: var(--flash);
+  color: var(--on-flash);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .countdownDisc {
+    animation: pop 1s ease-out both;
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(1.3);
+    opacity: 0;
+  }
+  15% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+}
+
+.shotBadge {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+/* White flash on capture. Skipped entirely when reduced motion is on. */
+.flash {
+  position: absolute;
+  inset: 0;
+  background: var(--surface);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease-out;
+}
+
+.flashOn {
+  opacity: 1;
+  transition: none;
+}
+
+.thumbs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.thumb {
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: var(--line-width) dashed var(--control-line);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- Frame + share ---------- */
+
+.editorLayout {
+  display: grid;
+  gap: var(--space-8);
+  align-items: start;
+}
+
+@media (min-width: 768px) {
+  .editorLayout {
+    grid-template-columns: minmax(0, 360px) 1fr;
+    gap: var(--space-16);
+  }
+}
+
+.stripPreview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 360px;
+  min-height: calc(var(--space-16) * 4);
+  justify-self: center;
+  padding: var(--space-4);
+  border: var(--line-width) solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+/* Keep the actions close to the top on phones. */
+@media (max-width: 767px) {
+  .stripPreview {
+    max-width: 240px;
+  }
+}
+
+.stripPreview img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+}
+
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.swatches legend {
+  padding: 0;
+  margin-bottom: var(--space-2);
+}
+
+.swatchOption {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4) var(--space-2) var(--space-2);
+  border-radius: var(--radius-pill);
+  border: var(--line-width) solid var(--control-line);
+  cursor: pointer;
+}
+
+.swatchOption:has(input:checked) {
+  background: var(--blush);
+  border-color: var(--ink);
+}
+
+.swatchOption:has(input:focus-visible) {
+  outline: var(--focus-width) solid var(--ink);
+  outline-offset: var(--focus-width);
+}
+
+.swatch {
+  width: var(--space-8);
+  height: var(--space-8);
+  border-radius: var(--radius-pill);
+  border: var(--line-width) solid var(--control-line);
+}

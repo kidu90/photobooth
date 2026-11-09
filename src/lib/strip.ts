@@ -1,56 +1,126 @@
-export type FrameStyle = { id: string; label: string; bg: string; text: string };
+import type { Frame } from "./frames";
 
-export const FRAMES: FrameStyle[] = [
-  { id: "classic", label: "Classic", bg: "#ffffff", text: "#111111" },
-  { id: "noir", label: "Noir", bg: "#111111", text: "#f5f5f5" },
-  { id: "blush", label: "Blush", bg: "#f9d5dc", text: "#7a2e3b" },
-  { id: "mint", label: "Mint", bg: "#cdeee0", text: "#1f5a44" },
-  { id: "butter", label: "Butter", bg: "#fbefb4", text: "#6b5310" },
-  { id: "sky", label: "Sky", bg: "#cfe4fb", text: "#1d3f66" },
-];
+/**
+ * Strip geometry, in CSS pixels, built from spacing tokens. The PNG is drawn
+ * at EXPORT_SCALE times this size so it prints and shares sharply.
+ */
+export const EXPORT_SCALE = 3;
+export const SHOT_COUNT = 4;
+/** Photos are 4:3 landscape, like the camera preview. */
+export const PHOTO_ASPECT = 4 / 3;
+const PHOTO_CSS_WIDTH = 320;
 
-export const PHOTO_W = 640;
-export const PHOTO_H = 480;
+export const PHOTO_PX_W = PHOTO_CSS_WIDTH * EXPORT_SCALE;
+export const PHOTO_PX_H = Math.round(PHOTO_PX_W / PHOTO_ASPECT);
+
+function readToken(name: string): string {
+  return getComputedStyle(document.documentElement).getPropertyValue(`--${name}`).trim();
+}
+
+function readPx(name: string): number {
+  return parseFloat(readToken(name)) || 0;
+}
 
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => resolve(img);
-    img.onerror = reject;
+    img.onerror = () => reject(new Error(`Couldn't load ${src}`));
     img.src = src;
   });
 }
 
-/** Lays the photos out as a vertical strip and returns it as a PNG data URL. */
-export async function composeStrip(photos: string[], frame: FrameStyle, caption: string): Promise<string> {
-  const pad = 36;
-  const gap = 24;
-  const footer = 130;
-  const w = PHOTO_W + pad * 2;
-  const h = pad + photos.length * PHOTO_H + (photos.length - 1) * gap + footer;
+/** Grabs one mirrored, centre-cropped 4:3 frame from the live video. */
+export function captureFrame(video: HTMLVideoElement): string | null {
+  const vw = video.videoWidth;
+  const vh = video.videoHeight;
+  if (!vw || !vh) return null;
 
   const canvas = document.createElement("canvas");
-  canvas.width = w;
-  canvas.height = h;
-  const ctx = canvas.getContext("2d")!;
+  canvas.width = PHOTO_PX_W;
+  canvas.height = PHOTO_PX_H;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
 
-  ctx.fillStyle = frame.bg;
-  ctx.fillRect(0, 0, w, h);
+  let sw = vw, sh = vh, sx = 0, sy = 0;
+  if (vw / vh > PHOTO_ASPECT) {
+    sw = vh * PHOTO_ASPECT;
+    sx = (vw - sw) / 2;
+  } else {
+    sh = vw / PHOTO_ASPECT;
+    sy = (vh - sh) / 2;
+  }
 
-  const images = await Promise.all(photos.map(loadImage));
+  // Mirror it so the photo matches what people saw in the preview.
+  ctx.translate(PHOTO_PX_W, 0);
+  ctx.scale(-1, 1);
+  ctx.drawImage(video, sx, sy, sw, sh, 0, 0, PHOTO_PX_W, PHOTO_PX_H);
+  return canvas.toDataURL("image/jpeg", 0.92);
+}
+
+/** Stacks the photos into a vertical strip in the chosen frame colour. */
+export async function renderStrip(photos: string[], frame: Frame): Promise<HTMLCanvasElement> {
+  const s = EXPORT_SCALE;
+  const pad = readPx("space-4") * s;
+  const gap = readPx("space-2") * s;
+  const radius = readPx("radius-sm") * s;
+  const logoH = readPx("space-8") * s;
+  const footer = (readPx("space-16") + readPx("space-8")) * s;
+
+  const width = PHOTO_PX_W + pad * 2;
+  const height = pad + photos.length * PHOTO_PX_H + (photos.length - 1) * gap + footer;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Canvas isn't available");
+
+  ctx.fillStyle = readToken(frame.bg);
+  ctx.fillRect(0, 0, width, height);
+
+  const [images, logo] = await Promise.all([
+    Promise.all(photos.map(loadImage)),
+    loadImage(frame.logo),
+  ]);
+
   images.forEach((img, i) => {
-    ctx.drawImage(img, pad, pad + i * (PHOTO_H + gap), PHOTO_W, PHOTO_H);
+    const y = pad + i * (PHOTO_PX_H + gap);
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(pad, y, PHOTO_PX_W, PHOTO_PX_H, radius);
+    ctx.clip();
+    ctx.drawImage(img, pad, y, PHOTO_PX_W, PHOTO_PX_H);
+    ctx.restore();
   });
 
-  const footerTop = h - footer;
-  ctx.fillStyle = frame.text;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.font = "700 40px Georgia, 'Times New Roman', serif";
-  ctx.fillText(caption || "photobooth", w / 2, footerTop + 52);
-  ctx.font = "400 22px ui-monospace, Menlo, monospace";
-  const date = new Date().toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
-  ctx.fillText(date.toUpperCase(), w / 2, footerTop + 96);
+  // Footer: logo on the left, date on the right.
+  const footerTop = height - footer;
+  const logoW = (logo.naturalWidth / logo.naturalHeight) * logoH;
+  const logoY = footerTop + (footer - logoH) / 2;
+  ctx.drawImage(logo, pad, logoY, logoW, logoH);
 
-  return canvas.toDataURL("image/png");
+  const labelFamily = readToken("font-body");
+  const labelWeight = readToken("type-label-weight");
+  const labelSize = readPx("type-label-size") * s;
+  const font = `${labelWeight} ${labelSize}px ${labelFamily}`;
+  try {
+    await document.fonts.load(font);
+  } catch {
+    /* fall back to the system font in the stack */
+  }
+  ctx.font = font;
+  ctx.fillStyle = readToken(frame.fg);
+  ctx.textAlign = "right";
+  ctx.textBaseline = "middle";
+  const date = new Date().toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+  ctx.fillText(date, width - pad, logoY + logoH / 2);
+
+  return canvas;
+}
+
+export function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("Couldn't export the strip"))), "image/png");
+  });
 }
