@@ -1,12 +1,13 @@
 import type { Frame } from "./frames";
-import { DEFAULT_FILTER, drawFiltered, type Filter } from "./filters";
+import { DEFAULT_FILTER, renderFilteredPhoto, type Filter } from "./filters";
 
 /**
  * Strip geometry, in CSS pixels, built from spacing tokens. The PNG is drawn
  * at EXPORT_SCALE times this size so it prints and shares sharply.
  */
 export const EXPORT_SCALE = 3;
-export const SHOT_COUNT = 4;
+export const SHOT_OPTIONS = [2, 3, 4] as const;
+export const DEFAULT_SHOT_COUNT = 4;
 /** Photos are 4:3 landscape, like the camera preview. */
 export const PHOTO_ASPECT = 4 / 3;
 const PHOTO_CSS_WIDTH = 320;
@@ -95,7 +96,7 @@ export async function renderStrip(
     ctx.beginPath();
     ctx.roundRect(pad, y, PHOTO_PX_W, PHOTO_PX_H, radius);
     ctx.clip();
-    drawFiltered(ctx, img, filter, pad, y, PHOTO_PX_W, PHOTO_PX_H);
+    ctx.drawImage(renderFilteredPhoto(img, filter, PHOTO_PX_W, PHOTO_PX_H, readToken("ink")), pad, y);
     ctx.restore();
   });
 

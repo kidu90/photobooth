@@ -8,7 +8,15 @@ type Op =
   | { fn: "grayscale" | "sepia" | "saturate" | "contrast" | "brightness"; v: number }
   | { fn: "hue-rotate"; v: number /* degrees */ };
 
-export type Filter = { id: string; name: string; ops: Op[] };
+export type Filter = {
+  id: string;
+  name: string;
+  ops: Op[];
+  /** Darkens the edges, 0–1. */
+  vignette?: number;
+  /** Film grain strength, 0–1. */
+  grain?: number;
+};
 
 export const FILTERS: Filter[] = [
   { id: "original", name: "Original", ops: [] },
@@ -35,6 +43,19 @@ export const FILTERS: Filter[] = [
     ops: [{ fn: "saturate", v: 1.1 }, { fn: "hue-rotate", v: 12 }, { fn: "brightness", v: 1.03 }],
   },
   { id: "pop", name: "Pop", ops: [{ fn: "saturate", v: 1.7 }, { fn: "contrast", v: 1.2 }] },
+  {
+    // The old chemical-booth look: warm brown monochrome, deep shadows, dark edges, grain.
+    id: "darkroom",
+    name: "Darkroom",
+    ops: [
+      { fn: "grayscale", v: 1 },
+      { fn: "sepia", v: 0.6 },
+      { fn: "contrast", v: 1.25 },
+      { fn: "brightness", v: 0.88 },
+    ],
+    vignette: 0.55,
+    grain: 0.09,
+  },
 ];
 
 export const DEFAULT_FILTER = FILTERS[0];
@@ -126,8 +147,56 @@ function applyOpsToPixels(data: Uint8ClampedArray, ops: Op[]) {
   }
 }
 
-/** Draws an image with the filter applied into the given rectangle. */
-export function drawFiltered(
+/**
+ * Returns a canvas holding the photo with the full filter applied: colour
+ * operations, then vignette and grain. `edgeColor` is the vignette colour
+ * (pass a token value, such as `ink`).
+ */
+export function renderFilteredPhoto(
+  img: CanvasImageSource,
+  filter: Filter,
+  w: number,
+  h: number,
+  edgeColor: string
+): HTMLCanvasElement {
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d", { willReadFrequently: !!filter.grain });
+  if (!ctx) return canvas;
+
+  drawFiltered(ctx, img, filter, 0, 0, w, h);
+
+  if (filter.vignette) {
+    const r = Math.hypot(w, h) / 2;
+    const g = ctx.createRadialGradient(w / 2, h / 2, r * 0.45, w / 2, h / 2, r);
+    g.addColorStop(0, "transparent");
+    g.addColorStop(1, edgeColor);
+    ctx.save();
+    ctx.globalAlpha = filter.vignette;
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+    ctx.restore();
+  }
+
+  if (filter.grain) {
+    const pixels = ctx.getImageData(0, 0, w, h);
+    const d = pixels.data;
+    const amount = filter.grain * 255;
+    for (let i = 0; i < d.length; i += 4) {
+      const n = (Math.random() - 0.5) * amount;
+      d[i] = clamp(d[i] + n);
+      d[i + 1] = clamp(d[i + 1] + n);
+      d[i + 2] = clamp(d[i + 2] + n);
+    }
+    ctx.putImageData(pixels, 0, 0);
+  }
+
+  return canvas;
+}
+
+/** Draws an image with the filter's colour operations applied into the given rectangle. */
+function drawFiltered(
   ctx: CanvasRenderingContext2D,
   img: CanvasImageSource,
   filter: Filter,

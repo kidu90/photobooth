@@ -9,6 +9,7 @@ import styles from "./Booth.module.css";
 
 export default function StripEditor({
   strip,
+  shotCount,
   error,
   frame,
   onFrameChange,
@@ -18,6 +19,7 @@ export default function StripEditor({
   onDone,
 }: {
   strip: StripImage | null;
+  shotCount: number;
   error: boolean;
   frame: Frame;
   onFrameChange: (frame: Frame) => void;
@@ -33,7 +35,7 @@ export default function StripEditor({
     <section className={styles.editorLayout} aria-labelledby="edit-title">
       <div className={styles.stripPreview}>
         {strip ? (
-          <img src={strip.url} alt={`Your photo strip: four shots in a ${frame.name.toLowerCase()} frame${filter.ops.length ? `, ${filter.name.toLowerCase()} filter` : ""}`} />
+          <img src={strip.url} alt={`Your photo strip: ${shotCount} shots in a ${frame.name.toLowerCase()} frame${filter.ops.length ? `, ${filter.name.toLowerCase()} filter` : ""}`} />
         ) : error ? (
           <p role="alert">We couldn&apos;t put your strip together. Retake the set and try again.</p>
         ) : (

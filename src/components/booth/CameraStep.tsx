@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { SHOT_COUNT, captureFrame } from "@/lib/strip";
+import { SHOT_OPTIONS, captureFrame } from "@/lib/strip";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import { Filter, filterCss } from "@/lib/filters";
 import FilterPicker from "./FilterPicker";
@@ -51,10 +51,14 @@ const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export default function CameraStep({
   filter,
   onFilterChange,
+  shotCount,
+  onShotCountChange,
   onDone,
 }: {
   filter: Filter;
   onFilterChange: (filter: Filter) => void;
+  shotCount: number;
+  onShotCountChange: (count: number) => void;
   onDone: (photos: string[]) => void;
 }) {
   const previewFilter = filterCss(filter);
@@ -126,11 +130,11 @@ export default function CameraStep({
     setShots([]);
 
     const taken: string[] = [];
-    for (let i = 0; i < SHOT_COUNT; i++) {
+    for (let i = 0; i < shotCount; i++) {
       for (let s = COUNTDOWN_SECONDS; s > 0; s--) {
         if (cancelRef.current) break;
         setCountdown(s);
-        setAnnouncement(s === COUNTDOWN_SECONDS ? `Shot ${i + 1} of ${SHOT_COUNT} in ${s}` : String(s));
+        setAnnouncement(s === COUNTDOWN_SECONDS ? `Shot ${i + 1} of ${shotCount} in ${s}` : String(s));
         await wait(1000);
       }
       setCountdown(null);
@@ -147,7 +151,7 @@ export default function CameraStep({
         await wait(FLASH_MS);
         setFlash(false);
       }
-      if (i < SHOT_COUNT - 1) await wait(PAUSE_BETWEEN_SHOTS_MS);
+      if (i < shotCount - 1) await wait(PAUSE_BETWEEN_SHOTS_MS);
     }
 
     setShooting(false);
@@ -157,7 +161,7 @@ export default function CameraStep({
       setAnnouncement("Stopped. Start again when you're ready.");
       return;
     }
-    if (taken.length === SHOT_COUNT) {
+    if (taken.length === shotCount) {
       stopCamera();
       onDone(taken);
     }
@@ -175,7 +179,7 @@ export default function CameraStep({
         <h1 id="shoot-title" ref={headingRef} tabIndex={-1} className="t-h1">
           Squeeze in.
         </h1>
-        <p className="t-lead">Pick a filter, then hit Start. Four shots, three seconds before each.</p>
+        <p className="t-lead">Pick your shots and a filter, then hit Start. You get three seconds before each one.</p>
       </div>
 
       <div className={styles.stage}>
@@ -188,6 +192,10 @@ export default function CameraStep({
           hidden={camera.status === "error"}
           style={{ filter: previewFilter }}
         />
+        {camera.status === "ready" && !!filter.vignette && (
+          <div className={styles.vignette} style={{ opacity: filter.vignette }} aria-hidden="true" />
+        )}
+        {camera.status === "ready" && !!filter.grain && <div className={styles.grain} aria-hidden="true" />}
 
         {camera.status === "starting" && (
           <div className={styles.stageMessage}>
@@ -220,7 +228,7 @@ export default function CameraStep({
 
         {shooting && (
           <p className={`t-label ${styles.shotBadge}`} aria-hidden="true">
-            Shot {Math.min(shots.length + 1, SHOT_COUNT)} of {SHOT_COUNT}
+            Shot {Math.min(shots.length + 1, shotCount)} of {shotCount}
           </p>
         )}
 
@@ -229,7 +237,25 @@ export default function CameraStep({
 
       <div className={styles.side}>
         {!error && (
-          <FilterPicker name="shoot-filter" value={filter} onChange={onFilterChange} disabled={shooting} />
+          <>
+            <fieldset className={styles.choices} disabled={shooting}>
+              <legend className="t-label">Photos in your strip</legend>
+              {SHOT_OPTIONS.map((n) => (
+                <label key={n} className={`t-label ${styles.choice}`}>
+                  <input
+                    type="radio"
+                    name="shot-count"
+                    value={n}
+                    checked={n === shotCount}
+                    onChange={() => onShotCountChange(n)}
+                    className="visually-hidden"
+                  />
+                  {n} photos
+                </label>
+              ))}
+            </fieldset>
+            <FilterPicker name="shoot-filter" value={filter} onChange={onFilterChange} disabled={shooting} />
+          </>
         )}
         <div className={styles.actions} hidden={!!error}>
           {shooting ? (
@@ -252,7 +278,7 @@ export default function CameraStep({
           <h2 className="t-label muted">Your shots</h2>
           {shots.length === 0 && !shooting && <p className="muted">Nobody&apos;s posing yet.</p>}
           <ol className={styles.thumbs}>
-            {Array.from({ length: SHOT_COUNT }, (_, i) => (
+            {Array.from({ length: shotCount }, (_, i) => (
               <li key={i} className={styles.thumb}>
                 {shots[i] ? (
                   <img src={shots[i]} alt={`Shot ${i + 1}`} style={{ filter: previewFilter }} />

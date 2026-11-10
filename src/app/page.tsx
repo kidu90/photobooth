@@ -3,23 +3,9 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import PlaceholderStrip from "@/components/PlaceholderStrip";
 import BoothIllustration from "@/components/BoothIllustration";
+import HowItWorks from "@/components/HowItWorks";
 import { FRAMES } from "@/lib/frames";
 import styles from "./page.module.css";
-
-const STEPS = [
-  {
-    title: "Squeeze in",
-    body: "Open the booth and get everyone in the frame. Closer. Closer still.",
-  },
-  {
-    title: "Take four shots",
-    body: "You get three seconds before each one. Change your pose every time.",
-  },
-  {
-    title: "Share your strip",
-    body: "Pick a frame colour, download your strip, and send it to the group.",
-  },
-];
 
 export default function Home() {
   return (
@@ -52,20 +38,7 @@ export default function Home() {
             <h2 id="how-title" className={`t-h2 ${styles.sectionTitle}`}>
               How it works
             </h2>
-            <ol className={styles.steps}>
-              {STEPS.map((step, i) => (
-                <li key={step.title} className={styles.step}>
-                  <span className={`t-label ${styles.stepBadge}`} aria-hidden="true">
-                    {i + 1}
-                  </span>
-                  <h3 className="t-h3">
-                    <span className="visually-hidden">Step {i + 1}: </span>
-                    {step.title}
-                  </h3>
-                  <p className="muted">{step.body}</p>
-                </li>
-              ))}
-            </ol>
+            <HowItWorks />
           </div>
         </section>
 
@@ -73,10 +46,10 @@ export default function Home() {
           <div className="container">
             <div className={styles.showcaseHead}>
               <h2 id="showcase-title" className="t-h2">
-                Four frames, one strip
+                Up to four frames, one strip
               </h2>
               <p className="t-lead">
-                Your shots stack up like the real thing. Pick the frame colour after you shoot.
+                Take two, three or four shots. They stack up like the real thing, and you pick the frame colour after.
               </p>
               <p className="t-label muted">The frames below are placeholders. Your photos go here.</p>
             </div>

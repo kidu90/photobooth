@@ -6,10 +6,12 @@ import styles from "./Booth.module.css";
 
 export default function ShareStep({
   strip,
+  shotCount,
   onBack,
   onTakeAnother,
 }: {
   strip: StripImage | null;
+  shotCount: number;
   onBack: () => void;
   onTakeAnother: () => void;
 }) {
@@ -45,7 +47,7 @@ export default function ShareStep({
     <section className={styles.editorLayout} aria-labelledby="share-title">
       <div className={styles.stripPreview}>
         {strip ? (
-          <img src={strip.url} alt="Your finished photo strip with four shots" />
+          <img src={strip.url} alt={`Your finished photo strip with ${shotCount} shots`} />
         ) : (
           <p className="t-label muted">Developing your strip…</p>
         )}

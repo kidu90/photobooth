@@ -42,46 +42,6 @@
   margin-bottom: var(--space-8);
 }
 
-.steps {
-  display: grid;
-  gap: var(--space-8);
-}
-
-@media (min-width: 768px) {
-  .steps {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.step {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  padding: var(--space-4);
-  background: var(--surface);
-  border: var(--line-width) solid var(--line);
-  border-radius: var(--radius-md);
-}
-
-@media (min-width: 768px) {
-  .step {
-    padding: var(--space-8);
-  }
-}
-
-.stepBadge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  align-self: flex-start;
-  min-width: var(--space-8);
-  height: var(--space-8);
-  padding-inline: var(--space-2);
-  background: var(--flash);
-  color: var(--on-flash);
-  border-radius: var(--radius-sm);
-}
-
 .showcase {
   background: var(--blush);
 }

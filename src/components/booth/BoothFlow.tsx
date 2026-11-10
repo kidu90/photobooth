@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { DEFAULT_FRAME, Frame } from "@/lib/frames";
 import { DEFAULT_FILTER, Filter } from "@/lib/filters";
-import { canvasToBlob, renderStrip } from "@/lib/strip";
+import { DEFAULT_SHOT_COUNT, canvasToBlob, renderStrip } from "@/lib/strip";
 import CameraStep from "./CameraStep";
 import StripEditor from "./StripEditor";
 import ShareStep from "./ShareStep";
@@ -17,31 +17,36 @@ export default function BoothFlow() {
   const [photos, setPhotos] = useState<string[]>([]);
   const [frame, setFrame] = useState<Frame>(DEFAULT_FRAME);
   const [filter, setFilter] = useState<Filter>(DEFAULT_FILTER);
+  const [shotCount, setShotCount] = useState(DEFAULT_SHOT_COUNT);
   const [strip, setStrip] = useState<StripImage | null>(null);
   const [stripError, setStripError] = useState(false);
 
-  // Re-render the strip whenever the photos or frame colour change.
+  // Re-render the strip whenever the photos, frame colour or filter change.
   useEffect(() => {
     if (photos.length === 0) {
       setStrip(null);
       return;
     }
     let cancelled = false;
-    let url: string | null = null;
     setStripError(false);
     renderStrip(photos, frame, filter)
       .then(canvasToBlob)
       .then((blob) => {
         if (cancelled) return;
-        url = URL.createObjectURL(blob);
-        setStrip({ blob, url });
+        // Keep showing the previous strip until this one is ready.
+        setStrip({ blob, url: URL.createObjectURL(blob) });
       })
       .catch(() => !cancelled && setStripError(true));
     return () => {
       cancelled = true;
-      if (url) URL.revokeObjectURL(url);
     };
   }, [photos, frame, filter]);
+
+  // Free each strip's object URL once it's been replaced or the booth closes.
+  useEffect(() => {
+    if (!strip) return;
+    return () => URL.revokeObjectURL(strip.url);
+  }, [strip]);
 
   const startOver = () => {
     setPhotos([]);
@@ -67,6 +72,8 @@ export default function BoothFlow() {
         <CameraStep
           filter={filter}
           onFilterChange={setFilter}
+          shotCount={shotCount}
+          onShotCountChange={setShotCount}
           onDone={(shots) => {
             setPhotos(shots);
             setStep("edit");
@@ -76,6 +83,7 @@ export default function BoothFlow() {
       {step === "edit" && (
         <StripEditor
           strip={strip}
+          shotCount={photos.length}
           error={stripError}
           frame={frame}
           onFrameChange={setFrame}
@@ -86,7 +94,7 @@ export default function BoothFlow() {
         />
       )}
       {step === "share" && (
-        <ShareStep strip={strip} onBack={() => setStep("edit")} onTakeAnother={startOver} />
+        <ShareStep strip={strip} shotCount={photos.length} onBack={() => setStep("edit")} onTakeAnother={startOver} />
       )}
     </div>
   );

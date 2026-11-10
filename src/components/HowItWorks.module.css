@@ -1,0 +1,111 @@
+.steps {
+  display: grid;
+  gap: var(--space-8);
+}
+
+@media (min-width: 768px) {
+  .steps {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Phone: strip beside the copy. Desktop: strip above it. */
+.step {
+  display: grid;
+  grid-template-columns: calc(var(--space-16) * 2) 1fr;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .step {
+    grid-template-columns: 1fr;
+    align-items: start;
+    align-content: start;
+    gap: var(--space-8);
+  }
+}
+
+.strip {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: calc(var(--space-16) * 2);
+  padding: var(--space-2);
+  background: var(--surface);
+  border: var(--line-width) solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+/* A slight tilt, like prints dropped on a table. */
+.step:nth-child(1) .strip {
+  transform: rotate(-2deg);
+}
+
+.step:nth-child(2) .strip {
+  transform: rotate(1.5deg);
+}
+
+.step:nth-child(3) .strip {
+  transform: rotate(-1deg);
+}
+
+.frame {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  background: var(--ground);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.frameFlash {
+  background: var(--flash);
+}
+
+.stripNumber {
+  color: var(--muted);
+  padding-inline: var(--space-2);
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Drawing styles. Stroke widths are in the frame's viewBox units. */
+.figure,
+.disc,
+.paper,
+.line {
+  stroke: var(--ink);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.figure,
+.paper {
+  fill: var(--surface);
+}
+
+.line {
+  fill: none;
+}
+
+.disc {
+  fill: var(--flash);
+}
+
+.discText {
+  fill: var(--on-flash);
+  font-family: var(--type-h2-family);
+  font-weight: var(--type-h2-weight);
+  font-size: var(--type-h2-size);
+}
+
+.tint {
+  fill: var(--blush);
+}
