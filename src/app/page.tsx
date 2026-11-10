@@ -2,7 +2,8 @@ import Link from "next/link";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import PlaceholderStrip from "@/components/PlaceholderStrip";
-import { DEFAULT_FRAME, FRAMES } from "@/lib/frames";
+import BoothIllustration from "@/components/BoothIllustration";
+import { FRAMES } from "@/lib/frames";
 import styles from "./page.module.css";
 
 const STEPS = [
@@ -40,12 +41,8 @@ export default function Home() {
                 <p className="t-label muted">No sign-up. Your photos stay on your device.</p>
               </div>
             </div>
-            <div className={styles.heroStrip}>
-              <PlaceholderStrip
-                frame={DEFAULT_FRAME}
-                size="lg"
-                label="Example photo strip with four placeholder frames"
-              />
+            <div className={styles.heroArt}>
+              <BoothIllustration />
             </div>
           </div>
         </section>

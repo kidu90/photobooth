@@ -6,6 +6,8 @@ Pose is a photobooth web app: friends squeeze in, take four shots, and get a pho
 - `npm run build`: production build (runs `npm run tokens` first)
 - `npm run lint`: ESLint
 
+Photo filters live in [src/lib/filters.ts](src/lib/filters.ts): one list of CSS filter operations drives the live preview, the canvas export, and a pixel fallback for browsers without canvas `filter` (Safari before 18). Photos are captured raw and the filter is applied when the strip is rendered, so it can change in the frame step. The hero art ([src/components/BoothIllustration.tsx](src/components/BoothIllustration.tsx)) is an original inline SVG drawn only in tokens. Don't swap in third-party illustrations.
+
 Routes: `/` is the landing page and `/booth` is the booth. The booth is one client component ([src/components/booth/BoothFlow.tsx](src/components/booth/BoothFlow.tsx)) that steps through shoot → frame → share, keeping photos in memory.
 
 ## Design system

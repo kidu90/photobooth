@@ -260,36 +260,50 @@
   border-radius: var(--radius-sm);
 }
 
-.swatches {
+/* Chip radio groups: frame colour and filter. */
+.choices {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
   margin: 0;
   padding: 0;
   border: 0;
+  min-width: 0;
 }
 
-.swatches legend {
+.choices legend {
   padding: 0;
   margin-bottom: var(--space-2);
 }
 
-.swatchOption {
+.choices:disabled {
+  opacity: 0.5;
+}
+
+.choice {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-2) var(--space-4) var(--space-2) var(--space-2);
+  padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-pill);
   border: var(--line-width) solid var(--control-line);
   cursor: pointer;
 }
 
-.swatchOption:has(input:checked) {
+.choice:has(.swatch) {
+  padding-left: var(--space-2);
+}
+
+.choices:disabled .choice {
+  cursor: not-allowed;
+}
+
+.choice:has(input:checked) {
   background: var(--blush);
   border-color: var(--ink);
 }
 
-.swatchOption:has(input:focus-visible) {
+.choice:has(input:focus-visible) {
   outline: var(--focus-width) solid var(--ink);
   outline-offset: var(--focus-width);
 }

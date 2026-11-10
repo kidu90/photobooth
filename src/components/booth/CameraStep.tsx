@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { SHOT_COUNT, captureFrame } from "@/lib/strip";
 import { useReducedMotion } from "@/lib/useReducedMotion";
+import { Filter, filterCss } from "@/lib/filters";
+import FilterPicker from "./FilterPicker";
 import styles from "./Booth.module.css";
 
 const COUNTDOWN_SECONDS = 3;
@@ -46,7 +48,16 @@ function toCameraError(e: unknown): CameraError {
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-export default function CameraStep({ onDone }: { onDone: (photos: string[]) => void }) {
+export default function CameraStep({
+  filter,
+  onFilterChange,
+  onDone,
+}: {
+  filter: Filter;
+  onFilterChange: (filter: Filter) => void;
+  onDone: (photos: string[]) => void;
+}) {
+  const previewFilter = filterCss(filter);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const cancelRef = useRef(false);
@@ -164,7 +175,7 @@ export default function CameraStep({ onDone }: { onDone: (photos: string[]) => v
         <h1 id="shoot-title" ref={headingRef} tabIndex={-1} className="t-h1">
           Squeeze in.
         </h1>
-        <p className="t-lead">Four shots, three seconds before each. Change your pose every time.</p>
+        <p className="t-lead">Pick a filter, then hit Start. Four shots, three seconds before each.</p>
       </div>
 
       <div className={styles.stage}>
@@ -173,8 +184,9 @@ export default function CameraStep({ onDone }: { onDone: (photos: string[]) => v
           className={styles.video}
           playsInline
           muted
-          aria-label="Live camera preview"
+          aria-label={`Live camera preview, ${filter.name.toLowerCase()} filter`}
           hidden={camera.status === "error"}
+          style={{ filter: previewFilter }}
         />
 
         {camera.status === "starting" && (
@@ -216,6 +228,9 @@ export default function CameraStep({ onDone }: { onDone: (photos: string[]) => v
       </div>
 
       <div className={styles.side}>
+        {!error && (
+          <FilterPicker name="shoot-filter" value={filter} onChange={onFilterChange} disabled={shooting} />
+        )}
         <div className={styles.actions} hidden={!!error}>
           {shooting ? (
             <button type="button" className="btn btn-secondary btn-lg" onClick={cancel}>
@@ -240,7 +255,7 @@ export default function CameraStep({ onDone }: { onDone: (photos: string[]) => v
             {Array.from({ length: SHOT_COUNT }, (_, i) => (
               <li key={i} className={styles.thumb}>
                 {shots[i] ? (
-                  <img src={shots[i]} alt={`Shot ${i + 1}`} />
+                  <img src={shots[i]} alt={`Shot ${i + 1}`} style={{ filter: previewFilter }} />
                 ) : (
                   <span className="t-label muted">
                     <span className="visually-hidden">Shot </span>

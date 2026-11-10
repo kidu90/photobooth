@@ -1,4 +1,5 @@
 import type { Frame } from "./frames";
+import { DEFAULT_FILTER, drawFiltered, type Filter } from "./filters";
 
 /**
  * Strip geometry, in CSS pixels, built from spacing tokens. The PNG is drawn
@@ -59,7 +60,11 @@ export function captureFrame(video: HTMLVideoElement): string | null {
 }
 
 /** Stacks the photos into a vertical strip in the chosen frame colour. */
-export async function renderStrip(photos: string[], frame: Frame): Promise<HTMLCanvasElement> {
+export async function renderStrip(
+  photos: string[],
+  frame: Frame,
+  filter: Filter = DEFAULT_FILTER
+): Promise<HTMLCanvasElement> {
   const s = EXPORT_SCALE;
   const pad = readPx("space-4") * s;
   const gap = readPx("space-2") * s;
@@ -90,7 +95,7 @@ export async function renderStrip(photos: string[], frame: Frame): Promise<HTMLC
     ctx.beginPath();
     ctx.roundRect(pad, y, PHOTO_PX_W, PHOTO_PX_H, radius);
     ctx.clip();
-    ctx.drawImage(img, pad, y, PHOTO_PX_W, PHOTO_PX_H);
+    drawFiltered(ctx, img, filter, pad, y, PHOTO_PX_W, PHOTO_PX_H);
     ctx.restore();
   });
 

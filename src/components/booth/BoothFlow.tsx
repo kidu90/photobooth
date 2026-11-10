@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { DEFAULT_FRAME, Frame } from "@/lib/frames";
+import { DEFAULT_FILTER, Filter } from "@/lib/filters";
 import { canvasToBlob, renderStrip } from "@/lib/strip";
 import CameraStep from "./CameraStep";
 import StripEditor from "./StripEditor";
@@ -15,6 +16,7 @@ export default function BoothFlow() {
   const [step, setStep] = useState<Step>("shoot");
   const [photos, setPhotos] = useState<string[]>([]);
   const [frame, setFrame] = useState<Frame>(DEFAULT_FRAME);
+  const [filter, setFilter] = useState<Filter>(DEFAULT_FILTER);
   const [strip, setStrip] = useState<StripImage | null>(null);
   const [stripError, setStripError] = useState(false);
 
@@ -27,7 +29,7 @@ export default function BoothFlow() {
     let cancelled = false;
     let url: string | null = null;
     setStripError(false);
-    renderStrip(photos, frame)
+    renderStrip(photos, frame, filter)
       .then(canvasToBlob)
       .then((blob) => {
         if (cancelled) return;
@@ -39,7 +41,7 @@ export default function BoothFlow() {
       cancelled = true;
       if (url) URL.revokeObjectURL(url);
     };
-  }, [photos, frame]);
+  }, [photos, frame, filter]);
 
   const startOver = () => {
     setPhotos([]);
@@ -63,6 +65,8 @@ export default function BoothFlow() {
 
       {step === "shoot" && (
         <CameraStep
+          filter={filter}
+          onFilterChange={setFilter}
           onDone={(shots) => {
             setPhotos(shots);
             setStep("edit");
@@ -75,6 +79,8 @@ export default function BoothFlow() {
           error={stripError}
           frame={frame}
           onFrameChange={setFrame}
+          filter={filter}
+          onFilterChange={setFilter}
           onRetake={startOver}
           onDone={() => setStep("share")}
         />

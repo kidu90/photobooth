@@ -21,19 +21,19 @@
   gap: var(--space-4);
 }
 
-.heroStrip {
+.heroArt {
   width: 100%;
-  max-width: 220px;
+  max-width: 280px;
   justify-self: center;
 }
 
 @media (min-width: 900px) {
   .heroInner {
-    grid-template-columns: 1fr 240px;
+    grid-template-columns: 1fr 380px;
     gap: var(--space-16);
   }
 
-  .heroStrip {
+  .heroArt {
     max-width: none;
   }
 }

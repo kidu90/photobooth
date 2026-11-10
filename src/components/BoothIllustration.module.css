@@ -1,0 +1,112 @@
+/* Stroke widths are in the SVG's own viewBox units. */
+.art {
+  --stroke: 3;
+  --stroke-thin: 2;
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.stroke,
+.outline,
+.body,
+.opening,
+.panel,
+.sign,
+.curtain,
+.lens,
+.button,
+.stripPaper {
+  stroke: var(--ink);
+  stroke-width: var(--stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.stroke,
+.outline {
+  fill: none;
+}
+
+.body,
+.panel {
+  fill: var(--surface);
+}
+
+.opening {
+  fill: var(--ground);
+}
+
+.solid {
+  fill: var(--ink);
+}
+
+.sign,
+.lens {
+  fill: var(--flash);
+}
+
+.signText {
+  fill: var(--on-flash);
+  font-family: var(--type-h3-family);
+  font-weight: var(--type-h3-weight);
+  font-size: var(--type-h3-size);
+  letter-spacing: var(--type-h3-tracking);
+}
+
+.curtain,
+.button {
+  fill: var(--curtain);
+}
+
+.fold {
+  stroke: var(--ink);
+  stroke-width: var(--stroke-thin);
+  stroke-linecap: round;
+}
+
+.floorLine {
+  stroke: var(--line);
+  stroke-width: var(--stroke);
+  stroke-linecap: round;
+}
+
+.stripPaper {
+  fill: var(--surface);
+  stroke-width: var(--stroke-thin);
+}
+
+.stripFrame {
+  fill: var(--blush);
+}
+
+/* The strip prints out of the slot once. With reduced motion it's simply there. */
+@media (prefers-reduced-motion: no-preference) {
+  .strip {
+    animation: print 1.6s ease-out 0.8s both;
+  }
+
+  .lens {
+    animation: shutter 0.5s ease-out 0.3s both;
+  }
+}
+
+@keyframes print {
+  from {
+    transform: translateY(-92px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes shutter {
+  0%,
+  100% {
+    fill: var(--flash);
+  }
+  40% {
+    fill: var(--surface);
+  }
+}
